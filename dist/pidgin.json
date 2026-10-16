@@ -1,0 +1,125 @@
+{
+  "game_start": [
+    "Enter bus, we dey go!",
+    "Driver don start engine, hold your bag well!",
+    "Oya board quick quick, road dey clear!",
+    "Oshodi straight! Enter with your exact fare!"
+  ],
+  "pothole": [
+    "Wahala dey! Who dig this road?",
+    "Chai! Pothole don shake bus shock absorber!",
+    "Ah ah, this road fit swallow tyre!",
+    "Pothole don chop our suspension!"
+  ],
+  "traffic_jam": [
+    "Go slow don block road!",
+    "Traffic don tie us for here!",
+    "Lekki-Epe expressway go-slow don start!",
+    "No movement! Switch lane before you sleep here!"
+  ],
+  "police_checkpoint": [
+    "Oga, I get am... settle am!",
+    "Stop there! Wetin dey inside your boot?",
+    "Show your particulars, oga driver!",
+    "Driver, drop something for the boys make we pass!"
+  ],
+  "flood": [
+    "Water don carry road!",
+    "This one na Kuramo waters on top expressway!",
+    "Speed boat danfo! Hold tight o!",
+    "Water don enter exhaust pipe! Boost through!"
+  ],
+  "nepa_light_out": [
+    "NEPA don take light again!",
+    "Up NEPA! Wait, light never come back o!",
+    "Headlights only! Drive with faith!",
+    "Total blackout on expressway! Stay alert!"
+  ],
+  "okada_swarm": [
+    "Okada dey come from everywhere!",
+    "Mind your side mirror, bike man dey rush!",
+    "Okada swarm! Dem no dey look traffic light!",
+    "See aggressive overtaking! Gidigidi no be work!"
+  ],
+  "conductor_drama": [
+    "Owo change! Where my change?",
+    "Enter with your small money, no 1000 Naira!",
+    "Conductor dey hang for door: 'Ikeja along!'",
+    "Customer wan run without paying fare! Catch am!"
+  ],
+  "fuel_low": [
+    "Fuel don dey finish o!",
+    "Tank dey cough, enter queue or find jerrycan!",
+    "Fuel gauge don enter red! Wahala!",
+    "Engine fit knock if fuel finish! Hurry!"
+  ],
+  "near_miss": [
+    "Oga calm down!",
+    "Chai! You almost scrape trailer body!",
+    "Holy Ghost fire! That one close die!",
+    "Drive easy, life no get duplicate!"
+  ],
+  "passenger_pickup": [
+    "Owa o! Conductor whistle don sound!",
+    "Enter, enter, Ikeja dey go!",
+    "One more person for front seat!",
+    "Lap your pikin, enter make we roll!",
+    "Market woman don enter with her basket!",
+    "Owa! Enter with your exact change!",
+    "Welcome onboard! Next stop Maryland!"
+  ],
+  "power_up_fuel": [
+    "Fuel tank full again! Vroooom!",
+    "Jerrycan power! We no dey stop!",
+    "Black market rescue! Full tank gbedu!"
+  ],
+  "power_up_generator": [
+    "I-better-pass-my-neighbor generator boost!",
+    "Tiger generator kick in! Unstoppable force!",
+    "24/7 power activated! Danfo indestructible!"
+  ],
+  "power_up_purewater": [
+    "Chilled pure water! Bus health restored!",
+    "Pure water sachet to the rescue! Cool engine!",
+    "Life saver! Fresh water don heal danfo!"
+  ],
+  "power_up_jollof": [
+    "Na jollof power be this! Turbo speed!",
+    "Party jollof with firewood aroma! Maximum overdrive!",
+    "Hot jollof boost! Danfo flying low!"
+  ],
+  "power_up_naira": [
+    "Owo repete! Double fare activated!",
+    "Bag of cash! 2x multiplier for your pocket!",
+    "Naira rain! Today na our day!"
+  ],
+  "power_up_siren": [
+    "Siren pass! Escort convoy style, clear road!",
+    "VIP convoy! Move aside for Danfo!",
+    "Wahala clear! Road belong to us now!"
+  ],
+  "checkpoint_reached": [
+    "Bus stop reached! Everybody drop their change!",
+    "Ojuelegba reached! Next stop: Maryland!",
+    "Maryland crossed! Heading straight to Ikeja!",
+    "Ikeja Under Bridge! We don conquer Lagos road!"
+  ],
+  "game_over": [
+    "Bus don spoil. Wahala for who no get spare part!",
+    "Engine don knock! Commuters don vex alight!",
+    "E don finish! Danfo don park for road side!",
+    "Last bus stop! Better luck next trip, driver!"
+  ],
+  "high_score": [
+    "You don blow! Na you be the Oga Driver!",
+    "Record breaker! Number one transporter in Lagos!",
+    "Chairman of all Danfo drivers!",
+    "Agba Driver! Nobody fit drag steering with you!"
+  ],
+  "radio_ticker": [
+    "Danfo FM 105.5: Heavy traffic around Ojota, keep tuning in!",
+    "Danfo Radio: Afrobeats hits keeping your engine warm!",
+    "Radio Lagos: Weather hot, passengers plenty, keep the wheels rolling!",
+    "Gbedu Radio: Live from Third Mainland Bridge, no dulling today!"
+  ]
+}

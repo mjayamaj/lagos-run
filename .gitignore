@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.testers-ai/
+opentestai-*.json
+opentestai-*.html
+opentestai-*.md
+opentestai-*.png
+lagos-danfo-startng-dist.zip

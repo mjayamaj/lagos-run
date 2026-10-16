@@ -1,0 +1,10 @@
+{
+  "leaderboard": {
+    "stats": [
+      { "key": "dodges", "label": "Blocks Dodged", "order": "highest" },
+      { "key": "distance", "label": "Metres Run", "order": "highest" },
+      { "key": "passengers", "label": "Passengers", "order": "highest" },
+      { "key": "naira", "label": "Naira Earned", "order": "highest" }
+    ]
+  }
+}

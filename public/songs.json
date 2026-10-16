@@ -1,0 +1,42 @@
+[
+  {
+    "id": "track_1",
+    "title": "Jaga Jaga (Danfo Radio Mix)",
+    "artist": "Idris Abdulkareem",
+    "file": "/assets/audio/jaga_jaga.mp3",
+    "bpm": 104,
+    "genre": "Naija Hip-Hop / Classic",
+    "beatOffset": 0.0,
+    "dropBeat": 32
+  },
+  {
+    "id": "track_2",
+    "title": "E Dey Pain Me (Ekwe Street Groove)",
+    "artist": "Stereoman",
+    "file": "/assets/audio/e_dey_pain_me.mp3",
+    "bpm": 112,
+    "genre": "Galala / Street Beat",
+    "beatOffset": 0.0,
+    "dropBeat": 28
+  },
+  {
+    "id": "track_3",
+    "title": "Lagos Sunset Highlife",
+    "artist": "Danfo All-Stars",
+    "file": "/assets/audio/lagos_sunset.mp3",
+    "bpm": 118,
+    "genre": "Highlife Afrobeat",
+    "beatOffset": 0.0,
+    "dropBeat": 36
+  },
+  {
+    "id": "track_4",
+    "title": "Third Mainland Expressway",
+    "artist": "Mainland Rhythm Band",
+    "file": "/assets/audio/third_mainland.mp3",
+    "bpm": 124,
+    "genre": "Afro-Fusion / Fast Cruise",
+    "beatOffset": 0.0,
+    "dropBeat": 40
+  }
+]

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description" content="Lagos Run: Keep the Danfo Moving - A 3D Endless Nigerian Danfo Racing Game for start.ng" />
+  <title>Lagos Run: Keep the Danfo Moving | start.ng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- 3D WebGL Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Non-blocking Pidgin Toast Container -->
+  <div id="pidgin-toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- HUD Container -->
+  <div id="hud-container" class="hud-overlay hidden">
+    <!-- Top Bar -->
+    <header class="hud-top-bar">
+      <!-- Player Profile Info (Official start.ng Profile Card) -->
+      <div id="startng-player-card" class="hud-card hud-player-card">
+        <img id="hud-player-face" class="player-face-img hidden" alt="Character Face" />
+        <span id="hud-player-avatar" class="avatar-badge">🧢</span>
+        <div class="player-meta">
+          <span id="hud-player-name" class="player-name">Driver</span>
+          <span id="hud-player-account" class="player-account">@driver</span>
+        </div>
+        <button id="btn-startng-signin" class="startng-signin-pill hidden" title="Sign in with start.ng">Sign in</button>
+      </div>
+
+      <!-- Route & Checkpoint Tracker -->
+      <div class="hud-card hud-route-card">
+        <div class="route-header">
+          <span id="hud-route-current" class="route-current">Oshodi Terminal</span>
+          <span id="hud-route-next" class="route-next">Next: Ojuelegba</span>
+        </div>
+        <div class="route-track">
+          <div id="hud-route-fill" class="route-fill"></div>
+        </div>
+        <div class="hud-mission-line">
+          <span id="hud-mission-text">🎯 Reach Ikeja before time runs out (0/8)</span>
+        </div>
+      </div>
+
+      <!-- Danfo Radio & Quick Controls -->
+      <div class="hud-card hud-radio-card">
+        <span class="radio-station-tag">📻 DANFO FM</span>
+        <div class="radio-ticker-wrap">
+          <span id="hud-radio-ticker" class="radio-ticker-text">Danfo FM 105.5 | Gbedu on Deck</span>
+        </div>
+        <div class="radio-buttons">
+          <button id="btn-hud-radio-next" class="hud-btn" title="Change Radio Station" aria-label="Change Radio Station">📻 Next</button>
+          <button id="btn-hud-controls-toggle" class="hud-btn" title="Toggle Controls Deck & Buttons" aria-label="Toggle Controls">🎮 Controls</button>
+          <button id="btn-hud-mute" class="hud-btn" title="Toggle Sound" aria-label="Toggle Sound" aria-pressed="false">🔊</button>
+          <button id="btn-hud-pause" class="hud-btn" title="Pause Game" aria-label="Pause Game" aria-pressed="false">⏸️</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Prominent On-Screen Controls Key Deck (Clickable & shows active key presses) -->
+    <div id="hud-controls-deck" class="hud-controls-deck" role="region" aria-label="Driving Controls">
+      <div class="deck-group deck-group-steer">
+        <button id="key-deck-left" class="deck-key" title="Steer Left (A or ◀)" aria-label="Steer Left">
+          <kbd>A</kbd> <span class="deck-arrow">◀</span> <span class="deck-lbl">STEER LEFT</span>
+        </button>
+        <button id="key-deck-right" class="deck-key" title="Steer Right (D or ▶)" aria-label="Steer Right">
+          <span class="deck-lbl">STEER RIGHT</span> <span class="deck-arrow">▶</span> <kbd>D</kbd>
+        </button>
+      </div>
+
+      <div class="deck-group deck-group-center">
+        <button id="key-deck-horn" class="deck-key deck-key-horn" title="Blow Horn (Spacebar or H)" aria-label="Honk Horn">
+          <span class="deck-icon">📢</span> <kbd>SPACE</kbd> <span class="deck-lbl">HORN</span>
+        </button>
+      </div>
+
+      <div class="deck-group deck-group-pedals">
+        <button id="key-deck-boost" class="deck-key deck-key-boost" title="Boost Speed (W or ▲)" aria-label="Boost Speed">
+          <span class="deck-icon">🚀</span> <kbd>W</kbd> <span class="deck-lbl">BOOST</span>
+        </button>
+        <button id="key-deck-brake" class="deck-key deck-key-brake" title="Brake (S or ▼)" aria-label="Brake">
+          <span class="deck-icon">🛑</span> <kbd>S</kbd> <span class="deck-lbl">BRAKE</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Dashboard Cluster -->
+    <footer class="hud-bottom-bar">
+      <!-- Speed, Health, Fuel Gauges -->
+      <div class="hud-card hud-gauge-cluster">
+        <div class="speed-box">
+          <span id="hud-speed-value" class="speed-num">45 KM/H</span>
+        </div>
+        <div class="bar-group">
+          <!-- Health -->
+          <div class="gauge-row">
+            <span class="gauge-label">🚌 BUS HEALTH</span>
+            <div class="gauge-bar"><div id="hud-health-fill" class="gauge-fill health-fill"></div></div>
+            <span id="hud-health-text" class="gauge-value">100%</span>
+          </div>
+          <!-- Fuel -->
+          <div class="gauge-row">
+            <span class="gauge-label">⛽ FUEL TANK</span>
+            <div class="gauge-bar"><div id="hud-fuel-fill" class="gauge-fill fuel-fill"></div></div>
+            <span id="hud-fuel-text" class="gauge-value">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Naira Fare & Passenger Luggage -->
+      <div class="hud-card hud-fare-cluster">
+        <div class="fare-row">
+          <span class="fare-label">FARE COLLECTED:</span>
+          <span id="hud-naira-value" class="fare-naira">₦0</span>
+        </div>
+        <div class="passenger-row">
+          <span class="commuter-icon">👥</span>
+          <span id="hud-passenger-value" class="commuter-count">0 Commuters</span>
+          <span id="hud-luggage-status" class="luggage-badge">🧳 Roof Empty</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">TRIP SCORE:</span>
+          <span id="hud-score-value" class="score-num">0</span>
+        </div>
+        <div class="dodge-row">
+          <span class="dodge-label">⚡ BLOCKS DODGED:</span>
+          <span id="hud-dodged-value" class="dodge-num">0</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile & Desktop On-Screen Touch Buttons -->
+    <div id="touch-controls" class="touch-controls-overlay">
+      <div class="touch-left-cluster">
+        <button id="btn-horn" class="touch-btn touch-btn-horn" aria-label="Honk Horn">
+          <span class="btn-kbd">SPACE</span> 📢 HORN
+        </button>
+        <div class="touch-steer-row">
+          <button id="btn-left" class="touch-btn touch-btn-nav" aria-label="Steer Left">
+            <span class="btn-kbd">A / ◀</span>
+          </button>
+          <button id="btn-right" class="touch-btn touch-btn-nav" aria-label="Steer Right">
+            <span class="btn-kbd">▶ / D</span>
+          </button>
+        </div>
+      </div>
+      <div class="touch-right-cluster">
+        <button id="btn-brake" class="touch-btn touch-btn-brake" aria-label="Brake">
+          <span class="btn-kbd">S / ▼</span> 🛑 BRAKE
+        </button>
+        <button id="btn-boost" class="touch-btn touch-btn-boost" aria-label="Boost">
+          <span class="btn-kbd">W / ▲</span> 🚀 BOOST
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- START SCREEN -->
+  <section id="screen-start" class="screen-modal active">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card start-card">
+      <div class="title-banner">
+        <span class="title-sub">START.NG COMMUNITY PRESENTS</span>
+        <h1 class="main-title">LAGOS RUN</h1>
+        <p class="tagline">Keep the Danfo Moving 🚍💨</p>
+      </div>
+
+      <!-- Current User Session Info -->
+      <div class="user-session-pill">
+        <img id="start-player-face" class="player-face-img hidden" alt="Character Face" />
+        <span id="start-player-avatar" class="startng-user-avatar user-icon">🧢</span>
+        <div class="user-info">
+          <div class="user-name-line">
+            <span id="start-player-name" class="startng-user-name">Guest Driver</span>
+            <span id="start-player-badge" class="verified-tag">✓ Start.ng Character</span>
+          </div>
+          <span id="start-player-handle" class="startng-user-handle">@guest</span>
+        </div>
+        <button id="btn-start-signin" class="startng-signin-pill" title="Sign in with start.ng">Sign in with start.ng</button>
+      </div>
+
+      <!-- Prominent Visual Keyboard & Touch Controls Showcase -->
+      <div class="controls-showcase">
+        <div class="showcase-header">
+          <span class="showcase-badge">🎮 HOW TO DRIVE YOUR DANFO</span>
+          <span class="showcase-sub">Keyboard Keys or Click On-Screen Buttons</span>
+        </div>
+        <div class="keycaps-row">
+          <div class="keycap-item">
+            <div class="keycap-combo">
+              <span class="keycap">A</span>
+              <span class="keycap-or">or</span>
+              <span class="keycap">◀</span>
+            </div>
+            <span class="keycap-desc">Steer Left</span>
+          </div>
+          <div class="keycap-item">
+            <div class="keycap-combo">
+              <span class="keycap">D</span>
+              <span class="keycap-or">or</span>
+              <span class="keycap">▶</span>
+            </div>
+            <span class="keycap-desc">Steer Right</span>
+          </div>
+          <div class="keycap-item">
+            <div class="keycap-combo">
+              <span class="keycap">W</span>
+              <span class="keycap-or">or</span>
+              <span class="keycap">▲</span>
+            </div>
+            <span class="keycap-desc">Boost 🚀</span>
+          </div>
+          <div class="keycap-item">
+            <div class="keycap-combo">
+              <span class="keycap">S</span>
+              <span class="keycap-or">or</span>
+              <span class="keycap">▼</span>
+            </div>
+            <span class="keycap-desc">Brake 🛑</span>
+          </div>
+          <div class="keycap-item keycap-item-space">
+            <div class="keycap-combo">
+              <span class="keycap keycap-space">SPACEBAR</span>
+            </div>
+            <span class="keycap-desc">Blow Horn 📢</span>
+          </div>
+        </div>
+        <div class="controls-tip-bar">
+          💡 <strong>Tip:</strong> You can also click the on-screen buttons or swipe! Dodge road blocks to survive and stack luggage!
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-actions">
+        <button id="btn-start-trip" class="btn btn-primary btn-pulse">
+          ENTER BUS, WE DEY GO! 🚍
+        </button>
+        <div class="button-row">
+          <button id="btn-open-settings" class="btn btn-secondary">
+            🎨 Garage & Themes
+          </button>
+          <button id="btn-open-leaderboard" class="btn btn-secondary">
+            🏆 Leaderboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- START.NG LOGIN MODAL -->
+  <section id="screen-login" class="screen-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-badge">START.NG AUTHENTICATION</span>
+        <h2>Log In to Drive Danfo</h2>
+        <p class="modal-subtext">Verified Start.ng pilots get high-score tracking and driver ranking.</p>
+      </div>
+
+      <!-- Quick Demo Profiles -->
+      <div class="demo-login-group">
+        <span class="group-label">Quick Select Pilot Profile:</span>
+        <div class="demo-chips">
+          <button class="btn-demo-login demo-chip" data-index="0">
+            <span>👨🏾‍🦱</span> Tunde 'Agba' (Master)
+          </button>
+          <button class="btn-demo-login demo-chip" data-index="1">
+            <span>👩🏾‍🦱</span> Amina 'Queen' (Ikeja)
+          </button>
+          <button class="btn-demo-login demo-chip" data-index="2">
+            <span>🧔🏾</span> Chidi 'Speed' (Third Mainland)
+          </button>
+        </div>
+      </div>
+
+      <div class="divider"><span>OR ENTER CUSTOM HANDLE</span></div>
+
+      <form id="form-login" class="login-form" onsubmit="return false;">
+        <label for="login-username-input">Start.ng Username / Driver Name:</label>
+        <input type="text" id="login-username-input" placeholder="e.g. Seyi_Danfo" maxlength="24" required />
+        <button type="submit" id="btn-login-submit" class="btn btn-primary">
+          Log In & Start Engine 🔑
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- PAUSE MENU -->
+  <section id="screen-pause" class="screen-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card pause-card">
+      <h2>DANFO PARKED BY BUS STOP ⏸️</h2>
+      <p>Commuters dey wait. Oya make we move!</p>
+      <div class="modal-actions vertical">
+        <button id="btn-resume" class="btn btn-primary">Resume Trip 🚍</button>
+        <button id="btn-restart" class="btn btn-secondary">Restart Trip 🔄</button>
+        <button id="btn-pause-settings" class="btn btn-secondary">Settings & Audio ⚙️</button>
+        <button id="btn-quit" class="btn btn-danger">Exit to Terminal 🚪</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS & THEME MODAL -->
+  <section id="screen-settings" class="screen-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card settings-card">
+      <div class="modal-header">
+        <h2>Danfo Garage & Styling 🎨</h2>
+        <p>Live theme tokens dynamically alter your Danfo, Driver, Conductor, Sky and UI in real-time!</p>
+      </div>
+
+      <!-- Central Theme Presets Switcher -->
+      <div class="settings-section">
+        <h3>Theme Presets</h3>
+        <div id="theme-preset-container" class="theme-presets-grid">
+          <!-- Filled dynamically by theme.js -->
+        </div>
+      </div>
+
+      <!-- Gameplay & Accessibility Options -->
+      <div class="settings-section">
+        <h3>Driving Mode & Accessibility</h3>
+        <div class="slider-group">
+          <label for="select-driving-mode">Traffic & Speed Mode:</label>
+          <select id="select-driving-mode" class="settings-select">
+            <option value="relaxed">Relaxed Commute (Casual - Slower Pace)</option>
+            <option value="normal" selected>Lagos Rush (Standard Arcade)</option>
+            <option value="hardcore">Crazy Okada (Hardcore - Fast Swerving 2x Multiplier)</option>
+          </select>
+        </div>
+        <div class="slider-group">
+          <label for="select-touch-controls">On-Screen Touch Controls:</label>
+          <select id="select-touch-controls" class="settings-select">
+            <option value="auto" selected>Auto (Detect Mobile Touch)</option>
+            <option value="show">Always Show On-Screen Buttons</option>
+            <option value="hide">Always Hide (Clean Screen / Keyboard Only)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Audio Settings -->
+      <div class="settings-section">
+        <h3>Afrobeats & Sound Levels</h3>
+        <div class="slider-group">
+          <label for="slider-master-volume">Master Volume:</label>
+          <input type="range" id="slider-master-volume" min="0" max="1" step="0.05" value="0.8" />
+        </div>
+        <div class="slider-group">
+          <label for="slider-music-volume">Danfo Radio Music:</label>
+          <input type="range" id="slider-music-volume" min="0" max="1" step="0.05" value="0.7" />
+        </div>
+        <div class="slider-group">
+          <label for="slider-sfx-volume">Danfo Horn & SFX:</label>
+          <input type="range" id="slider-sfx-volume" min="0" max="1" step="0.05" value="0.9" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-close-settings" class="btn btn-primary">Back to Road 🛣️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD MODAL -->
+  <section id="screen-leaderboard" class="screen-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card leaderboard-card">
+      <div class="modal-header">
+        <span class="modal-badge">START.NG HALL OF FAME</span>
+        <h2>Agba Drivers of Lagos 🏆</h2>
+        <p>Highest scores, passenger records and longest routes on start.ng.</p>
+      </div>
+
+      <div id="leaderboard-list" class="leaderboard-table">
+        <!-- Filled dynamically -->
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-close-leaderboard" class="btn btn-primary">Close Leaderboard</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME OVER SCREEN -->
+  <section id="screen-gameover" class="screen-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card gameover-card">
+      <div class="gameover-header">
+        <span class="alert-icon">💥</span>
+        <h2>DANFO HIT A ROADBLOCK!</h2>
+        <div id="go-crash-reason" class="crash-reason-banner">Lagos Obstacle Collision 💥</div>
+        <div class="restart-prompt-box">
+          <p class="restart-prompt-question">Do you want to start again?</p>
+          <span class="restart-prompt-hint">Press <strong>SPACE</strong>, <strong>ENTER</strong>, or tap the button below</span>
+        </div>
+        <p id="go-pidgin-quote" class="pidgin-quote">"Wahala for who no get spare part!"</p>
+      </div>
+
+      <!-- High Score Celebration Tag -->
+      <div id="go-high-score-badge" class="high-score-badge hidden">
+        🎉 NEW HIGH SCORE FOR <span class="startng-user-name">DRIVER</span>! 🎉
+      </div>
+
+      <!-- Trip Stats Summary -->
+      <div class="stats-summary-grid">
+        <div class="stat-pill">
+          <span class="stat-title">TOTAL SCORE</span>
+          <span id="go-score" class="stat-val">12,450</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-title">BLOCKS DODGED</span>
+          <span id="go-blocks-dodged" class="stat-val highlight-dodge">0 Blocks</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-title">FARE COLLECTED</span>
+          <span id="go-naira" class="stat-val highlight-naira">₦24,500</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-title">LAST BUS STOP REACHED</span>
+          <span id="go-route" class="stat-val">Ikeja Under Bridge</span>
+        </div>
+      </div>
+
+      <!-- Actions: Prompt to start again -->
+      <div class="modal-actions">
+        <button id="btn-play-again" class="btn btn-primary btn-pulse btn-large-restart">
+          🔄 YES, START AGAIN! (ENTER)
+        </button>
+        <div class="button-row">
+          <button id="btn-gameover-leaderboard" class="btn btn-secondary">
+            🏆 Leaderboard
+          </button>
+          <button id="btn-share-score" class="btn btn-secondary">
+            📢 Share Score
+          </button>
+          <button id="btn-gameover-exit" class="btn btn-secondary">
+            🚪 Garage
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
