@@ -587,9 +587,26 @@ body.controls-hidden .touch-controls-overlay {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  padding: 0 16px;
+  padding: 0 max(16px, env(safe-area-inset-left, 16px)) max(16px, env(safe-area-inset-bottom, 16px)) max(16px, env(safe-area-inset-right, 16px));
   pointer-events: none;
-  z-index: 20;
+  z-index: 25;
+}
+
+/* Hide touch overlay on pure desktop mouse/keyboard by default unless forced */
+@media (hover: hover) and (pointer: fine) {
+  .touch-controls-overlay:not(.force-show) {
+    display: none !important;
+  }
+}
+
+/* On mobile / coarse touch pointers, hide keyboard shortcut deck & show touch controls */
+@media (hover: none) and (pointer: coarse), (max-width: 820px) {
+  .hud-controls-deck {
+    display: none !important;
+  }
+  .touch-controls-overlay:not(.force-hide) {
+    display: flex !important;
+  }
 }
 
 .touch-controls-overlay.force-hide {
@@ -600,27 +617,21 @@ body.controls-hidden .touch-controls-overlay {
   display: flex !important;
 }
 
-.touch-left-cluster {
+.touch-cluster {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  pointer-events: auto;
-}
-
-.touch-steer-row {
-  display: flex;
-  gap: 10px;
-}
-
-.touch-right-cluster {
-  display: flex;
-  gap: 10px;
   align-items: flex-end;
   pointer-events: auto;
 }
 
-/* Lift HUD bottom cards above touch controls when touch buttons are active */
+.touch-left-cluster {
+  gap: 12px;
+}
+
+.touch-right-cluster {
+  gap: 10px;
+}
+
+/* Lift HUD bottom cards above touch controls on touch devices so road is visible */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
   body:not(.touch-controls-hidden) .hud-bottom-bar {
     margin-bottom: 96px;
@@ -628,81 +639,114 @@ body.controls-hidden .touch-controls-overlay {
 }
 
 .touch-btn {
-  background: rgba(24, 15, 10, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(20, 12, 8, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 179, 0, 0.5);
   color: var(--ui-text);
   border-radius: 50%;
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: 1.25rem;
-  width: 60px;
-  height: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  transition: transform 0.1s, background-color 0.1s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  touch-action: none !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.08s ease;
 }
 
-.btn-kbd {
-  display: block;
+.touch-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.touch-label {
   font-size: 0.62rem;
   font-weight: 900;
-  background: rgba(0, 0, 0, 0.45);
-  color: var(--ui-primary);
-  padding: 1px 4px;
-  border-radius: 4px;
-  margin-bottom: 2px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  margin-top: 2px;
+  pointer-events: none;
 }
 
-.touch-btn:active {
-  transform: scale(0.92);
-  background: var(--ui-primary);
-  color: #111;
+.touch-btn-nav {
+  width: 66px;
+  height: 66px;
+  border-color: rgba(255, 179, 0, 0.6);
+}
+
+.touch-btn-nav .touch-icon {
+  color: var(--ui-primary);
+  font-size: 1.5rem;
+}
+
+.touch-btn-nav .touch-label {
+  color: var(--ui-text);
 }
 
 .touch-btn-boost {
-  background: rgba(255, 87, 34, 0.85);
-  border-color: #FF5722;
-  font-size: 0.82rem;
-  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.9), rgba(229, 57, 53, 0.92));
+  border-color: #FF7043;
   width: 72px;
-  height: 56px;
+  height: 66px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.45);
+}
+
+.touch-btn-boost .touch-label {
+  color: #fff;
 }
 
 .touch-btn-brake {
-  background: rgba(213, 0, 0, 0.85);
-  border-color: #D50000;
-  font-size: 0.82rem;
-  border-radius: var(--radius-md);
-  width: 72px;
-  height: 56px;
+  background: linear-gradient(135deg, rgba(213, 0, 0, 0.88), rgba(183, 28, 28, 0.92));
+  border-color: #EF5350;
+  width: 68px;
+  height: 66px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(213, 0, 0, 0.4);
+}
+
+.touch-btn-brake .touch-label {
+  color: #fff;
 }
 
 .touch-btn-horn {
-  border-radius: 24px;
-  width: 114px;
-  height: 44px;
-  font-size: 0.82rem;
-  background: rgba(255, 179, 0, 0.88);
-  color: #111;
-  border-color: #FFB300;
-  display: flex;
-  flex-direction: row;
-  gap: 6px;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(255, 179, 0, 0.35);
+  width: 58px;
+  height: 58px;
+  background: rgba(255, 179, 0, 0.22);
+  border-color: rgba(255, 179, 0, 0.6);
+  border-radius: 50%;
 }
 
-.touch-btn-horn .btn-kbd {
-  color: #fff;
-  background: #111;
+.touch-btn-horn .touch-icon {
+  font-size: 1.25rem;
+}
+
+.touch-btn-horn .touch-label {
+  color: var(--ui-primary);
+  font-size: 0.58rem;
+}
+
+/* Touch active & key-active states */
+.touch-btn:active,
+.touch-btn.key-active {
+  transform: scale(0.91) translateY(2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 16px var(--ui-primary);
+}
+
+.touch-btn-boost:active,
+.touch-btn-boost.key-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px #FF5722;
+}
+
+.touch-btn-brake:active,
+.touch-btn-brake.key-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px #D50000;
 }
 
 /* WCAG Focus Visible Accessibility */

@@ -122,8 +122,10 @@ export class InputManager {
   }
 
   initTouch() {
+    let lastTapTime = 0;
+
     window.addEventListener("touchstart", (e) => {
-      if (e.target.closest(".interactive-ui") || e.target.tagName === "BUTTON") return;
+      if (e.target.closest(".interactive-ui") || e.target.tagName === "BUTTON" || e.target.closest("button")) return;
       const touch = e.touches[0];
       this.touchStartX = touch.clientX;
       this.touchStartY = touch.clientY;
@@ -131,17 +133,18 @@ export class InputManager {
     }, { passive: true });
 
     window.addEventListener("touchend", (e) => {
-      if (e.target.closest(".interactive-ui") || e.target.tagName === "BUTTON") return;
+      if (e.target.closest(".interactive-ui") || e.target.tagName === "BUTTON" || e.target.closest("button")) return;
       const touch = e.changedTouches[0];
       const deltaX = touch.clientX - this.touchStartX;
       const deltaY = touch.clientY - this.touchStartY;
-      const elapsed = Date.now() - this.touchStartTime;
+      const now = Date.now();
+      const elapsed = now - this.touchStartTime;
 
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
 
       if (absX > this.minSwipeDistance && absX > absY) {
-        // Horizontal swipe
+        // Horizontal swipe: lane shift
         if (deltaX > 0) {
           this.handlers.onRight();
         } else {
@@ -150,20 +153,21 @@ export class InputManager {
       } else if (absY > this.minSwipeDistance && absY > absX) {
         // Vertical swipe
         if (deltaY < 0) {
+          // Swipe up = quick boost
           this.handlers.onBoost(true);
-          setTimeout(() => this.handlers.onBoost(false), 400);
+          setTimeout(() => this.handlers.onBoost(false), 500);
         } else {
+          // Swipe down = quick brake
           this.handlers.onBrake(true);
-          setTimeout(() => this.handlers.onBrake(false), 400);
+          setTimeout(() => this.handlers.onBrake(false), 500);
         }
       } else if (elapsed < 250 && absX < 15 && absY < 15) {
-        // Tap: top half = boost, bottom half = brake
-        if (touch.clientY < window.innerHeight * 0.5) {
-          this.handlers.onBoost(true);
-          setTimeout(() => this.handlers.onBoost(false), 300);
+        // Double-tap anywhere to honk horn!
+        if (now - lastTapTime < 300) {
+          this.handlers.onHorn();
+          lastTapTime = 0;
         } else {
-          this.handlers.onBrake(true);
-          setTimeout(() => this.handlers.onBrake(false), 300);
+          lastTapTime = now;
         }
       }
     }, { passive: true });
@@ -174,17 +178,38 @@ export class InputManager {
     const bindBtn = (id, onDown, onUp) => {
       const el = document.getElementById(id);
       if (!el) return;
-      el.addEventListener("pointerdown", (e) => {
-        e.preventDefault();
+
+      const triggerDown = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        if (e && e.pointerId !== undefined) {
+          try { el.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+        el.classList.add("key-active");
         onDown();
-      });
+      };
+
+      const triggerUp = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        if (e && e.pointerId !== undefined) {
+          try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+        el.classList.remove("key-active");
+        if (onUp) onUp();
+      };
+
+      el.addEventListener("pointerdown", triggerDown);
       if (onUp) {
+        el.addEventListener("pointerup", triggerUp);
+        el.addEventListener("pointercancel", triggerUp);
+      } else {
         el.addEventListener("pointerup", (e) => {
-          e.preventDefault();
-          onUp();
+          if (e && e.cancelable) e.preventDefault();
+          el.classList.remove("key-active");
         });
-        el.addEventListener("pointerleave", onUp);
-        el.addEventListener("pointercancel", onUp);
+        el.addEventListener("pointercancel", (e) => {
+          if (e && e.cancelable) e.preventDefault();
+          el.classList.remove("key-active");
+        });
       }
     };
 

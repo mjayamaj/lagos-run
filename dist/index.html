@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="./assets/index-Blk-HvjH.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BcboDaYZ.css">
+  <script type="module" crossorigin src="./assets/index-V2PblFT1.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B9tg5KIj.css">
 </head>
 <body>
   <!-- 3D WebGL Canvas -->
@@ -134,27 +134,31 @@
       </div>
     </footer>
 
-    <!-- Mobile & Desktop On-Screen Touch Buttons -->
-    <div id="touch-controls" class="touch-controls-overlay">
-      <div class="touch-left-cluster">
-        <button id="btn-horn" class="touch-btn touch-btn-horn" aria-label="Honk Horn">
-          <span class="btn-kbd">SPACE</span> 📢 HORN
+    <!-- Simple, Ergonomic Mobile Touch Controls -->
+    <div id="touch-controls" class="touch-controls-overlay" role="toolbar" aria-label="Touch Controls">
+      <div class="touch-cluster touch-left-cluster">
+        <button id="btn-left" class="touch-btn touch-btn-nav touch-btn-left" aria-label="Steer Left" title="Steer Left">
+          <span class="touch-icon">◀</span>
+          <span class="touch-label">LEFT</span>
         </button>
-        <div class="touch-steer-row">
-          <button id="btn-left" class="touch-btn touch-btn-nav" aria-label="Steer Left">
-            <span class="btn-kbd">A / ◀</span>
-          </button>
-          <button id="btn-right" class="touch-btn touch-btn-nav" aria-label="Steer Right">
-            <span class="btn-kbd">▶ / D</span>
-          </button>
-        </div>
+        <button id="btn-right" class="touch-btn touch-btn-nav touch-btn-right" aria-label="Steer Right" title="Steer Right">
+          <span class="touch-icon">▶</span>
+          <span class="touch-label">RIGHT</span>
+        </button>
       </div>
-      <div class="touch-right-cluster">
-        <button id="btn-brake" class="touch-btn touch-btn-brake" aria-label="Brake">
-          <span class="btn-kbd">S / ▼</span> 🛑 BRAKE
+
+      <div class="touch-cluster touch-right-cluster">
+        <button id="btn-horn" class="touch-btn touch-btn-horn" aria-label="Honk Horn" title="Blow Horn">
+          <span class="touch-icon">📢</span>
+          <span class="touch-label">HORN</span>
         </button>
-        <button id="btn-boost" class="touch-btn touch-btn-boost" aria-label="Boost">
-          <span class="btn-kbd">W / ▲</span> 🚀 BOOST
+        <button id="btn-brake" class="touch-btn touch-btn-brake" aria-label="Brake" title="Brake">
+          <span class="touch-icon">🛑</span>
+          <span class="touch-label">BRAKE</span>
+        </button>
+        <button id="btn-boost" class="touch-btn touch-btn-boost" aria-label="Boost" title="Boost">
+          <span class="touch-icon">🚀</span>
+          <span class="touch-label">BOOST</span>
         </button>
       </div>
     </div>

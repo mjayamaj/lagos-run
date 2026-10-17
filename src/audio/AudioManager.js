@@ -265,15 +265,17 @@ class AudioManager {
 
   synthShaker(accent = false) {
     if (!this.ctx || this.isMuted) return;
-    const bufferSize = this.ctx.sampleRate * 0.04;
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
+    if (!this.shakerBuffer) {
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.05);
+      this.shakerBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = this.shakerBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
     }
 
     const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
+    noise.buffer = this.shakerBuffer;
 
     const filter = this.ctx.createBiquadFilter();
     filter.type = "highpass";

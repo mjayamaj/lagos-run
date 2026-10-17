@@ -68,6 +68,9 @@ export class Game {
 
     this.lastTime = 0;
     this.lastSummary = null;
+    this.animFrameId = null;
+    this.isBoosting = false;
+    this.isBraking = false;
 
     this.setupInput();
   }
@@ -87,20 +90,10 @@ export class Game {
         this.danfoBus.shiftRight();
       },
       onBoost: (active) => {
-        if (!this.isRunning || this.isPaused) return;
-        if (active) {
-          this.targetSpeed = this.speed + 14;
-        } else {
-          this.targetSpeed = Math.max(22, this.speed - 14);
-        }
+        this.isBoosting = !!active;
       },
       onBrake: (active) => {
-        if (!this.isRunning || this.isPaused) return;
-        if (active) {
-          this.targetSpeed = Math.max(12, this.speed - 10);
-        } else {
-          this.targetSpeed = Math.max(22, this.speed + 5);
-        }
+        this.isBraking = !!active;
       },
       onHorn: () => {
         audioManager.playHorn();
@@ -191,13 +184,24 @@ export class Game {
     // Game start Pidgin toast
     pidginPopup.show("game_start", `Driver: ${user ? user.name : "Agba Driver"}`);
 
+    this.isBoosting = false;
+    this.isBraking = false;
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+
     this.lastTime = performance.now();
-    requestAnimationFrame((t) => this.loop(t));
+    this.animFrameId = requestAnimationFrame((t) => this.loop(t));
   }
 
   stop() {
     this.isRunning = false;
     this.isPaused = false;
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
     danfoRadio.stop();
     this.hud.hide();
   }
@@ -205,34 +209,56 @@ export class Game {
   togglePause() {
     this.isPaused = !this.isPaused;
     if (this.isPaused) {
+      if (this.animFrameId) {
+        cancelAnimationFrame(this.animFrameId);
+        this.animFrameId = null;
+      }
       this.screens.showScreen("pause");
     } else {
       this.screens.hideAllScreens();
       this.lastTime = performance.now();
-      requestAnimationFrame((t) => this.loop(t));
+      if (this.animFrameId) {
+        cancelAnimationFrame(this.animFrameId);
+      }
+      this.animFrameId = requestAnimationFrame((t) => this.loop(t));
     }
     return this.isPaused;
   }
 
   loop(currentTime) {
-    if (!this.isRunning || this.isPaused) return;
+    if (!this.isRunning || this.isPaused) {
+      this.animFrameId = null;
+      return;
+    }
 
     const delta = Math.min((currentTime - this.lastTime) / 1000, 0.1);
     this.lastTime = currentTime;
 
-    this.update(delta);
-    this.renderer.render();
+    try {
+      this.update(delta);
+      this.renderer.render();
+    } catch (err) {
+      console.error("Game loop tick error:", err);
+    }
 
-    if (this.isRunning && !this.isGameOver) {
-      requestAnimationFrame((t) => this.loop(t));
+    if (this.isRunning && !this.isGameOver && !this.isPaused) {
+      this.animFrameId = requestAnimationFrame((t) => this.loop(t));
+    } else {
+      this.animFrameId = null;
     }
   }
 
   update(delta) {
     // 1. Natural speed ramp-up over distance based on difficulty mode
     const distanceRamp = Math.min(this.maxDistanceRamp, this.distance * this.speedAccelRate);
-    const effectiveTargetSpeed = this.targetSpeed + distanceRamp;
-    this.speed += (effectiveTargetSpeed - this.speed) * Math.min(1, 1.5 * delta);
+    let targetSpeed = this.baseSpeed + distanceRamp;
+
+    // Power-up & boost/brake modifier
+    if (this.powerUpTimers.jollof > 0) targetSpeed += 20;
+    if (this.isBoosting) targetSpeed += 16;
+    if (this.isBraking) targetSpeed = Math.max(10, targetSpeed - 12);
+
+    this.speed += (targetSpeed - this.speed) * Math.min(1, 2.8 * delta);
 
     // 2. Forward movement
     const stepZ = this.speed * delta;
@@ -349,6 +375,8 @@ export class Game {
   }
 
   handleObstacleHit(type) {
+    if (this.isGameOver || !this.isRunning) return;
+
     // 1. FATAL ROAD BLOCKS: Stop the game immediately and prompt to start again
     const isFatalRoadBlock = (type === "broken_truck" || type === "police_checkpoint" || type === "traffic_jam");
 
@@ -372,7 +400,9 @@ export class Game {
       }
 
       setTimeout(() => {
-        this.triggerGameOver(crashReason);
+        if (!this.isGameOver) {
+          this.triggerGameOver(crashReason);
+        }
       }, 250);
       return;
     }
@@ -429,7 +459,9 @@ export class Game {
     if (this.health <= 0) {
       this.speed = 0;
       setTimeout(() => {
-        this.triggerGameOver(fatalMsg);
+        if (!this.isGameOver) {
+          this.triggerGameOver(fatalMsg);
+        }
       }, 250);
     }
   }
@@ -591,6 +623,10 @@ export class Game {
     if (this.isGameOver) return;
     this.isGameOver = true;
     this.isRunning = false;
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
 
     danfoRadio.stop();
     this.hud.hide();

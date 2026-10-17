@@ -68,7 +68,7 @@ export class ObstacleManager {
     item.collected = false;
     item.hit = false;
     item.dodged = false;
-    if (this.pools[item.type]) {
+    if (this.pools[item.type] && !this.pools[item.type].includes(item)) {
       this.pools[item.type].push(item);
     }
   }
@@ -561,8 +561,8 @@ export class ObstacleManager {
       if (!item.hit && !item.collected && !item.dodged && !item.isPowerUp && !item.isPassenger) {
         if (item.mesh.position.z < busZ - 1.5) {
           item.dodged = true;
-          if (callbacks.onDodge) {
-            callbacks.onDodge(item.type);
+          if (gameCallbacks && gameCallbacks.onDodge) {
+            gameCallbacks.onDodge(item.type);
           }
         }
       }
@@ -591,17 +591,18 @@ export class ObstacleManager {
   }
 
   handleCollision(item, danfoBus, callbacks) {
+    if (!callbacks) return;
     if (item.isPowerUp) {
       item.collected = true;
       item.mesh.visible = false;
-      callbacks.onPowerUp(item.type);
+      if (callbacks.onPowerUp) callbacks.onPowerUp(item.type);
       return;
     }
 
     if (item.isPassenger) {
       item.collected = true;
       item.mesh.visible = false;
-      callbacks.onPassengerPickup();
+      if (callbacks.onPassengerPickup) callbacks.onPassengerPickup();
       return;
     }
 
@@ -611,12 +612,12 @@ export class ObstacleManager {
     // If Danfo has generator shield or siren active, bash through obstacle without damage!
     if (danfoBus.isShielded || danfoBus.isSirenActive) {
       audioManager.playCoin();
-      callbacks.onObstacleBash(item.type);
+      if (callbacks.onObstacleBash) callbacks.onObstacleBash(item.type);
       item.mesh.visible = false;
       return;
     }
 
-    callbacks.onObstacleHit(item.type);
+    if (callbacks.onObstacleHit) callbacks.onObstacleHit(item.type);
   }
 
   clearAll() {
